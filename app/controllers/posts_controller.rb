@@ -9,13 +9,30 @@ class PostsController < ApplicationController
 
   # GET /posts/1 or /posts/1.json
   def show
-    go
+    go(1000)
   end
 
   # GET /posts/new
+  # def new
+  #   StackProf.run(mode: :cpu, out: 'tmp/stackprof-cpu-myapp.dump', raw: true) do
+  #     @post = Post.new
+  #     @post = Post.new
+
+  #     go(300)
+  #   end
+
+  #   # stackprof --flamegraph tmp/stackprof-cpu-myapp.dump > tmp/flamegraph  &&
+  #   # stackprof --flamegraph-viewer=tmp/flamegraph
+  # end
+
   def new
-    @post = Post.new
+    Flamegraph.generate('tmp/flamegraph.html') do
+      @post = Post.new
+
+      go(300)
+    end
   end
+
 
   # GET /posts/1/edit
   def edit
@@ -69,9 +86,9 @@ class PostsController < ApplicationController
       params.require(:post).permit(:body, :name, :status)
     end
 
-    def go
+    def go(n)
       r = 0
-      1000.times do
+      n.times do
         1000.times do
           r = r + 1
         end
